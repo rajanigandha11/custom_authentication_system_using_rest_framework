@@ -1,5 +1,9 @@
 from rest_framework import serializers
 from accout.models import User
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes,smart_str
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_decode
 
 class UserRegistrationSerializers(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
@@ -102,6 +106,6 @@ class UserPasswordResetSerializer(serializers.Serializer):
       user.set_password(password)
       user.save()
       return attrs
-    except DjangoUnicodeDecodeError as identifier:
+    except UnicodeDecodeError as identifier:
       PasswordResetTokenGenerator().check_token(user, token)
       raise serializers.ValidationError('Token is not Valid or Expired')
